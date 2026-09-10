@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "nextjs": {
+      "source": "PyModel/react-frontend-skills",
+      "sourceType": "github",
+      "skillPath": "skills/nextjs/SKILL.md",
+      "computedHash": "ab54ed432b8301a2b718d8bc44ef91666a65f1963fcf6316e6016aef34dc66b1"
+    },
+    "react": {
+      "source": "PyModel/react-frontend-skills",
+      "sourceType": "github",
+      "skillPath": "skills/react/SKILL.md",
+      "computedHash": "c7e93b99ad5ae0d833b8e7e7b03333b9bad2bfd31f7a11cd445aa7eef452a6b4"
+    },
+    "tailwind": {
+      "source": "PyModel/react-frontend-skills",
+      "sourceType": "github",
+      "skillPath": "skills/tailwind/SKILL.md",
+      "computedHash": "ad40283c3138edf1a48db9f65b1b6a09aae35c6ca911ab35d6a5ea5beb66a04d"
+    }
+  }
+}
