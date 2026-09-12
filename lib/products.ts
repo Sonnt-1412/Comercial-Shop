@@ -1,4 +1,10 @@
-export type ProductArt = "board" | "sensor" | "power" | "tools" | "module" | "display";
+export type ProductArt =
+  | "board"
+  | "sensor"
+  | "power"
+  | "tools"
+  | "module"
+  | "display";
 
 export type Product = {
   slug: string;
@@ -24,7 +30,8 @@ export const products: Product[] = [
     categoryLabel: "Board",
     price: 189000,
     status: "Còn hàng",
-    description: "Bo mạch phát triển nhỏ gọn cho những dự án kết nối đầu tiên và những thử nghiệm không ngại đi xa.",
+    description:
+      "Bo mạch phát triển nhỏ gọn cho những dự án kết nối đầu tiên và những thử nghiệm không ngại đi xa.",
     art: "board",
     accent: "#d6b675",
     badge: "Bán chạy",
@@ -44,7 +51,8 @@ export const products: Product[] = [
     categoryLabel: "Cảm biến",
     price: 80000,
     status: "Còn hàng",
-    description: "Cảm biến khí quyển chính xác để đo nhiệt độ, độ ẩm và áp suất trong cùng một module.",
+    description:
+      "Cảm biến khí quyển chính xác để đo nhiệt độ, độ ẩm và áp suất trong cùng một module.",
     art: "sensor",
     accent: "#9db7a6",
     specs: [
@@ -63,7 +71,8 @@ export const products: Product[] = [
     categoryLabel: "Module",
     price: 120000,
     status: "Còn hàng",
-    description: "Nguồn USB-C gọn gàng cho các mạch cần một điểm cấp điện ổn định và dễ tiếp cận.",
+    description:
+      "Nguồn USB-C gọn gàng cho các mạch cần một điểm cấp điện ổn định và dễ tiếp cận.",
     art: "power",
     accent: "#bb9f7b",
     specs: [
@@ -82,7 +91,8 @@ export const products: Product[] = [
     categoryLabel: "Phụ kiện",
     price: 265000,
     status: "Còn hàng",
-    description: "Bộ tua vít chính xác 24 đầu cho những thao tác lắp ráp cần cảm giác tay và sự kiên nhẫn.",
+    description:
+      "Bộ tua vít chính xác 24 đầu cho những thao tác lắp ráp cần cảm giác tay và sự kiên nhẫn.",
     art: "tools",
     accent: "#c8a96b",
     badge: "Essential",
@@ -102,7 +112,8 @@ export const products: Product[] = [
     categoryLabel: "Board",
     price: 145000,
     status: "Còn hàng",
-    description: "Vi điều khiển hai nhân mạnh mẽ cho các project cần nhiều GPIO và phản hồi nhanh.",
+    description:
+      "Vi điều khiển hai nhân mạnh mẽ cho các project cần nhiều GPIO và phản hồi nhanh.",
     art: "module",
     accent: "#a7b2c3",
     specs: [
@@ -121,7 +132,8 @@ export const products: Product[] = [
     categoryLabel: "Hiển thị",
     price: 95000,
     status: "Sắp hết",
-    description: "Màn hình OLED đơn sắc, tương phản cao cho các thiết bị nhỏ và giao diện thông tin tối giản.",
+    description:
+      "Màn hình OLED đơn sắc, tương phản cao cho các thiết bị nhỏ và giao diện thông tin tối giản.",
     art: "display",
     accent: "#9db7a6",
     specs: [
@@ -140,7 +152,8 @@ export const products: Product[] = [
     categoryLabel: "Phụ kiện",
     price: 55000,
     status: "Còn hàng",
-    description: "Bộ dây nối nhiều màu, nhiều chuẩn pin để đi dây nhanh trong quá trình prototyping.",
+    description:
+      "Bộ dây nối nhiều màu, nhiều chuẩn pin để đi dây nhanh trong quá trình prototyping.",
     art: "tools",
     accent: "#b9a1b8",
     specs: [
@@ -159,7 +172,8 @@ export const products: Product[] = [
     categoryLabel: "Module",
     price: 65000,
     status: "Còn hàng",
-    description: "Chuyển đổi mức logic hai chiều giữa 3.3V và 5V để các mạch khác thế hệ nói chuyện với nhau.",
+    description:
+      "Chuyển đổi mức logic hai chiều giữa 3.3V và 5V để các mạch khác thế hệ nói chuyện với nhau.",
     art: "module",
     accent: "#c7a47e",
     specs: [

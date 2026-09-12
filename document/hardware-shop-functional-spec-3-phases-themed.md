@@ -538,7 +538,6 @@ Người dùng có thể:
 
 - Thêm sản phẩm vào giỏ.
 - Đăng ký / đăng nhập.
-- Đăng nhập Google hoặc Facebook.
 - Lưu địa chỉ.
 - Chọn địa chỉ đã có.
 - Nhập địa chỉ mới.
@@ -587,11 +586,10 @@ TỔNG
 
 ### 2. Đăng nhập / đăng ký
 
-Hỗ trợ:
+Hỗ trợ trong Phase 2:
 
 - Email + mật khẩu.
-- Google.
-- Facebook.
+- Quên / đặt lại mật khẩu.
 
 Ví dụ:
 
@@ -604,11 +602,6 @@ Mật khẩu
 [ ĐĂNG NHẬP ]
 
 Quên mật khẩu?
-
------- HOẶC ------
-
-[ Tiếp tục với Google ]
-[ Tiếp tục với Facebook ]
 
 Tạo tài khoản
 ```
@@ -853,7 +846,17 @@ Admin có thể chỉnh:
 - Ảnh chính.
 - Footer.
 
-### 7. Hoàn thiện trải nghiệm
+### 7. Đăng nhập mạng xã hội
+
+Sau khi có tài khoản email hoạt động ổn định, bổ sung:
+
+- Đăng nhập Google.
+- Đăng nhập Facebook.
+- Liên kết tài khoản mạng xã hội với tài khoản đã có khi phù hợp.
+
+Phần này cần OAuth credentials, redirect URL và cấu hình ứng dụng từ từng nền tảng.
+
+### 8. Hoàn thiện trải nghiệm
 
 Sau khi các chức năng chính đã hoạt động:
 
