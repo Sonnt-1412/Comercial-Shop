@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { safeNext } from "@/lib/auth";
+import { noticeUrl } from "@/lib/redirects";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = { error?: string };
@@ -50,7 +51,10 @@ export async function signUp(
     };
   if (data.session) redirect(next);
   redirect(
-    "/login?notice=Kiểm tra email để xác nhận tài khoản trước khi đăng nhập.",
+    noticeUrl(
+      "/login",
+      "Kiểm tra email để xác nhận tài khoản trước khi đăng nhập.",
+    ),
   );
 }
 
@@ -68,6 +72,9 @@ export async function requestPasswordReset(
   if (error)
     return { error: "Chưa thể gửi email khôi phục. Vui lòng thử lại sau." };
   redirect(
-    "/login?notice=Nếu email tồn tại, liên kết đặt lại mật khẩu đã được gửi.",
+    noticeUrl(
+      "/login",
+      "Nếu email tồn tại, liên kết đặt lại mật khẩu đã được gửi.",
+    ),
   );
 }

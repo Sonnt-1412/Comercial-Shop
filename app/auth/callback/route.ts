@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { safeNext } from "@/lib/auth";
+import { noticeUrl } from "@/lib/redirects";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: NextRequest) {
@@ -12,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
   return NextResponse.redirect(
     new URL(
-      "/login?notice=Liên kết đăng nhập không hợp lệ hoặc đã hết hạn.",
+      noticeUrl("/login", "Liên kết đăng nhập không hợp lệ hoặc đã hết hạn."),
       request.url,
     ),
   );

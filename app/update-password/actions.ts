@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import type { AuthState } from "@/app/login/actions";
+import { noticeUrl } from "@/lib/redirects";
 import { createClient } from "@/lib/supabase/server";
 
 export async function updatePassword(
@@ -14,5 +15,5 @@ export async function updatePassword(
   const { error } = await supabase.auth.updateUser({ password });
   if (error)
     return { error: "Chưa thể đổi mật khẩu. Hãy mở lại liên kết trong email." };
-  redirect("/account?notice=Mật khẩu đã được cập nhật.");
+  redirect(noticeUrl("/account", "Mật khẩu đã được cập nhật."));
 }
