@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { AuthState } from "@/app/login/actions";
 import { SubmitButton } from "@/components/submit-button";
 
@@ -15,6 +15,8 @@ export function AuthForm({
   next?: string;
 }) {
   const [state, formAction] = useActionState(action, {});
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
   const isLogin = mode === "login";
   const isRegister = mode === "register";
 
@@ -27,6 +29,8 @@ export function AuthForm({
           <input
             name="fullName"
             type="text"
+            value={fullName}
+            onChange={(event) => setFullName(event.target.value)}
             autoComplete="name"
             minLength={2}
             maxLength={120}
@@ -37,9 +41,11 @@ export function AuthForm({
       ) : null}
       <label>
         Email
-        <input
-          name="email"
-          type="email"
+          <input
+            name="email"
+            type="email"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
           inputMode="email"
           autoComplete="email"
           spellCheck={false}

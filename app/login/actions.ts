@@ -7,7 +7,7 @@ import { noticeUrl } from "@/lib/redirects";
 import { siteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 
-export type AuthState = { error?: string };
+export type AuthState = { error?: string; fullName?: string; email?: string };
 
 export async function signIn(
   _: AuthState,
@@ -34,11 +34,13 @@ export async function signUp(
     formData.get("passwordConfirmation") ?? "",
   );
   const next = safeNext(formData.get("next"));
-  if (fullName.length < 2) return { error: "Họ tên cần ít nhất 2 ký tự." };
+  const fields = { fullName, email };
+  if (fullName.length < 2)
+    return { ...fields, error: "Họ tên cần ít nhất 2 ký tự." };
   if (!email || password.length < 8)
-    return { error: "Nhập email hợp lệ và mật khẩu từ 8 ký tự." };
+    return { ...fields, error: "Nhập email hợp lệ và mật khẩu từ 8 ký tự." };
   if (password !== passwordConfirmation)
-    return { error: "Hai mật khẩu chưa trùng khớp." };
+    return { ...fields, error: "Hai mật khẩu chưa trùng khớp." };
   const supabase = await createClient();
   const origin = siteUrl((await headers()).get("origin"));
   const { data, error } = await supabase.auth.signUp({
@@ -52,10 +54,11 @@ export async function signUp(
   if (error) {
     const providerMessage = error.message.toLowerCase();
     if (providerMessage.includes("already")) {
-      return { error: "Email này đã được đăng ký." };
+      return { ...fields, error: "Email này đã được đăng ký." };
     }
     if (error.status === 429) {
       return {
+        ...fields,
         error: "Bạn đã yêu cầu quá nhanh. Vui lòng chờ một phút rồi thử lại.",
       };
     }
@@ -65,11 +68,12 @@ export async function signUp(
       providerMessage.includes("email provider")
     ) {
       return {
+        ...fields,
         error:
           "Không thể gửi email xác nhận vì Supabase chưa cấu hình SMTP cho người dùng bên ngoài. Vui lòng liên hệ quản trị viên.",
       };
     }
-    return { error: "Chưa thể tạo tài khoản. Vui lòng thử lại." };
+    return { ...fields, error: "Chưa thể tạo tài khoản. Vui lòng thử lại." };
   }
   if (data.session) redirect(next);
   redirect(
