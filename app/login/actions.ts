@@ -49,12 +49,28 @@ export async function signUp(
       emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
-  if (error)
-    return {
-      error: error.message.includes("already")
-        ? "Email này đã được đăng ký."
-        : "Chưa thể tạo tài khoản. Vui lòng thử lại.",
-    };
+  if (error) {
+    const providerMessage = error.message.toLowerCase();
+    if (providerMessage.includes("already")) {
+      return { error: "Email này đã được đăng ký." };
+    }
+    if (error.status === 429) {
+      return {
+        error: "Bạn đã yêu cầu quá nhanh. Vui lòng chờ một phút rồi thử lại.",
+      };
+    }
+    if (
+      providerMessage.includes("not authorized") ||
+      providerMessage.includes("smtp") ||
+      providerMessage.includes("email provider")
+    ) {
+      return {
+        error:
+          "Không thể gửi email xác nhận vì Supabase chưa cấu hình SMTP cho người dùng bên ngoài. Vui lòng liên hệ quản trị viên.",
+      };
+    }
+    return { error: "Chưa thể tạo tài khoản. Vui lòng thử lại." };
+  }
   if (data.session) redirect(next);
   redirect(
     noticeUrl(
@@ -75,8 +91,25 @@ export async function requestPasswordReset(
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/callback?next=/update-password`,
   });
-  if (error)
+  if (error) {
+    const providerMessage = error.message.toLowerCase();
+    if (error.status === 429) {
+      return {
+        error: "Bạn đã yêu cầu quá nhanh. Vui lòng chờ một phút rồi thử lại.",
+      };
+    }
+    if (
+      providerMessage.includes("not authorized") ||
+      providerMessage.includes("smtp") ||
+      providerMessage.includes("email provider")
+    ) {
+      return {
+        error:
+          "Email chưa thể gửi vì Supabase chưa cấu hình SMTP cho người dùng bên ngoài. Vui lòng liên hệ quản trị viên.",
+      };
+    }
     return { error: "Chưa thể gửi email khôi phục. Vui lòng thử lại sau." };
+  }
   redirect(
     noticeUrl(
       "/login",
