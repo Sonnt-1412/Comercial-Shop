@@ -59,7 +59,8 @@ export async function signUp(
     if (error.status === 429) {
       return {
         ...fields,
-        error: "Bạn đã yêu cầu quá nhanh. Vui lòng chờ một phút rồi thử lại.",
+        error:
+          "Dịch vụ email đang tạm giới hạn yêu cầu (theo phút hoặc theo giờ). Vui lòng thử lại sau; quản trị viên cần cấu hình SMTP riêng cho khách hàng.",
       };
     }
     if (
@@ -99,7 +100,8 @@ export async function requestPasswordReset(
     const providerMessage = error.message.toLowerCase();
     if (error.status === 429) {
       return {
-        error: "Bạn đã yêu cầu quá nhanh. Vui lòng chờ một phút rồi thử lại.",
+        error:
+          "Dịch vụ email đang tạm giới hạn yêu cầu (theo phút hoặc theo giờ). Vui lòng thử lại sau; quản trị viên cần cấu hình SMTP riêng cho khách hàng.",
       };
     }
     if (
