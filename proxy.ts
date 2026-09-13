@@ -13,6 +13,7 @@ export const config = {
     "/login",
     "/order-success",
     "/register",
+    "/resend-confirmation",
     "/update-password",
   ],
 };

@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { safeNext } from "@/lib/auth";
 import { noticeUrl } from "@/lib/redirects";
+import { siteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = { error?: string };
@@ -29,12 +30,17 @@ export async function signUp(
   const fullName = String(formData.get("fullName") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
+  const passwordConfirmation = String(
+    formData.get("passwordConfirmation") ?? "",
+  );
   const next = safeNext(formData.get("next"));
   if (fullName.length < 2) return { error: "Họ tên cần ít nhất 2 ký tự." };
   if (!email || password.length < 8)
     return { error: "Nhập email hợp lệ và mật khẩu từ 8 ký tự." };
+  if (password !== passwordConfirmation)
+    return { error: "Hai mật khẩu chưa trùng khớp." };
   const supabase = await createClient();
-  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
+  const origin = siteUrl((await headers()).get("origin"));
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -65,7 +71,7 @@ export async function requestPasswordReset(
   const email = String(formData.get("email") ?? "").trim();
   if (!email) return { error: "Nhập email đã dùng để đăng ký." };
   const supabase = await createClient();
-  const origin = (await headers()).get("origin") ?? "http://localhost:3000";
+  const origin = siteUrl((await headers()).get("origin"));
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/callback?next=/update-password`,
   });
@@ -75,6 +81,39 @@ export async function requestPasswordReset(
     noticeUrl(
       "/login",
       "Nếu email tồn tại, liên kết đặt lại mật khẩu đã được gửi.",
+    ),
+  );
+}
+
+export async function resendConfirmation(
+  _: AuthState,
+  formData: FormData,
+): Promise<AuthState> {
+  const email = String(formData.get("email") ?? "").trim();
+  if (!email) return { error: "Nhập email đã dùng để đăng ký." };
+
+  const supabase = await createClient();
+  const origin = siteUrl((await headers()).get("origin"));
+  const { error } = await supabase.auth.resend({
+    type: "signup",
+    email,
+    options: {
+      emailRedirectTo: `${origin}/auth/callback?next=/account`,
+    },
+  });
+
+  if (error)
+    return {
+      error:
+        error.status === 429
+          ? "Vui lòng chờ ít nhất một phút trước khi gửi lại."
+          : "Chưa thể gửi lại email xác nhận. Vui lòng thử lại sau.",
+    };
+
+  redirect(
+    noticeUrl(
+      "/login",
+      "Email xác nhận mới đã được gửi. Vui lòng kiểm tra hộp thư và thư rác.",
     ),
   );
 }

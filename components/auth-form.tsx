@@ -11,7 +11,7 @@ export function AuthForm({
   next = "/account",
 }: {
   action: (state: AuthState, formData: FormData) => Promise<AuthState>;
-  mode: "login" | "register" | "forgot";
+  mode: "login" | "register" | "forgot" | "resend";
   next?: string;
 }) {
   const [state, formAction] = useActionState(action, {});
@@ -47,7 +47,7 @@ export function AuthForm({
           placeholder="ban@example.com…"
         />
       </label>
-      {mode !== "forgot" ? (
+      {mode !== "forgot" && mode !== "resend" ? (
         <label>
           Mật khẩu
           <input
@@ -57,6 +57,19 @@ export function AuthForm({
             minLength={8}
             required
             placeholder="Tối thiểu 8 ký tự…"
+          />
+        </label>
+      ) : null}
+      {isRegister ? (
+        <label>
+          Nhập lại mật khẩu
+          <input
+            name="passwordConfirmation"
+            type="password"
+            autoComplete="new-password"
+            minLength={8}
+            required
+            placeholder="Nhập lại mật khẩu…"
           />
         </label>
       ) : null}
@@ -71,7 +84,9 @@ export function AuthForm({
             ? "Đăng nhập"
             : isRegister
               ? "Tạo tài khoản"
-              : "Gửi liên kết khôi phục"
+              : mode === "resend"
+                ? "Gửi lại email xác nhận"
+                : "Gửi liên kết khôi phục"
         }
         pending="Đang xử lý…"
         className="button button-primary button-wide"
@@ -79,6 +94,7 @@ export function AuthForm({
       {isLogin ? (
         <div className="auth-links">
           <Link href="/forgot-password">Quên mật khẩu?</Link>
+          <Link href="/resend-confirmation">Gửi lại email xác nhận</Link>
           <Link href={`/register?next=${encodeURIComponent(next)}`}>
             Tạo tài khoản
           </Link>
@@ -92,7 +108,7 @@ export function AuthForm({
           </Link>
         </p>
       ) : null}
-      {mode === "forgot" ? (
+      {mode === "forgot" || mode === "resend" ? (
         <p className="auth-switch">
           <Link href="/login">Quay lại đăng nhập</Link>
         </p>
