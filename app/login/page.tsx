@@ -13,6 +13,13 @@ export default async function LoginPage({
 }) {
   const params = await searchParams;
   const next = safeNext(params.next);
+  const notice =
+    params.notice ===
+      "Email xác nhận mới đã được gửi. Vui lòng kiểm tra hộp thư và thư rác." ||
+    params.notice ===
+      "Kiểm tra email để xác nhận tài khoản trước khi đăng nhập."
+      ? "Tài khoản này có thể đã được xác nhận. Hãy đăng nhập; nếu không nhớ mật khẩu, hãy dùng chức năng khôi phục mật khẩu."
+      : params.notice;
   if (await getCurrentUser()) redirect(next);
   return (
     <main className="auth-page shell" id="main-content">
@@ -25,9 +32,9 @@ export default async function LoginPage({
           Đăng nhập để lưu địa chỉ, xác nhận đơn và theo dõi quá trình giao
           hàng.
         </p>
-        {params.notice ? (
+        {notice ? (
           <p className="form-notice" role="status">
-            {params.notice}
+            {notice}
           </p>
         ) : null}
         <AuthForm action={signIn} mode="login" next={next} />

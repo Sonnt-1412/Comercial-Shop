@@ -59,7 +59,7 @@ export async function signUp(
   redirect(
     noticeUrl(
       "/login",
-      "Kiểm tra email để xác nhận tài khoản trước khi đăng nhập.",
+      "Nếu đây là tài khoản mới, hãy kiểm tra email để xác nhận. Nếu email đã có tài khoản, hãy đăng nhập hoặc khôi phục mật khẩu.",
     ),
   );
 }
@@ -113,7 +113,7 @@ export async function resendConfirmation(
   redirect(
     noticeUrl(
       "/login",
-      "Email xác nhận mới đã được gửi. Vui lòng kiểm tra hộp thư và thư rác.",
+      "Nếu tài khoản chưa được xác nhận, email mới đã được gửi. Tài khoản đã xác nhận sẽ không nhận thêm email; hãy đăng nhập hoặc khôi phục mật khẩu.",
     ),
   );
 }
