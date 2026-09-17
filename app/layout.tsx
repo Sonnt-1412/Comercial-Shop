@@ -6,11 +6,10 @@ import { CartProvider } from "@/components/cart-provider";
 
 export const metadata: Metadata = {
   title: {
-    default: "NØR/SHOP — Hardware for builders",
-    template: "%s — NØR/SHOP",
+    default: "Xuanquy — Sản phẩm",
+    template: "%s — Xuanquy",
   },
-  description:
-    "Phần cứng, linh kiện và công cụ cho những người thích xây dựng mọi thứ từ đầu.",
+  description: "Cửa hàng phần cứng, linh kiện và đồ điện tử.",
 };
 
 export const viewport: Viewport = { themeColor: "#181817" };

@@ -9,9 +9,6 @@ export default function AccountLayout({
   return (
     <main className="account-page shell" id="main-content">
       <div className="account-heading">
-        <p className="eyebrow">
-          <span className="eyebrow-line" /> Account / Customer space
-        </p>
         <h1>Tài khoản</h1>
       </div>
       <div className="account-layout">

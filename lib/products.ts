@@ -13,12 +13,14 @@ export type Product = {
   category: string;
   categoryLabel: string;
   price: number;
-  status: "Còn hàng" | "Sắp hết";
+  status: "Còn hàng" | "Sắp hết" | "Hết hàng";
   description: string;
   art: ProductArt;
   accent: string;
-  badge?: string;
   specs: { label: string; value: string }[];
+  stock?: number | null;
+  images?: string[];
+  isActive?: boolean;
 };
 
 export const products: Product[] = [
@@ -31,10 +33,9 @@ export const products: Product[] = [
     price: 189000,
     status: "Còn hàng",
     description:
-      "Bo mạch phát triển nhỏ gọn cho những dự án kết nối đầu tiên và những thử nghiệm không ngại đi xa.",
+      "Bo mạch phát triển ESP32 hỗ trợ Wi-Fi và Bluetooth, phù hợp cho các dự án kết nối.",
     art: "board",
     accent: "#d6b675",
-    badge: "Bán chạy",
     specs: [
       { label: "Model", value: "ESP32-WROOM-32" },
       { label: "Điện áp", value: "3.3V" },
@@ -92,10 +93,9 @@ export const products: Product[] = [
     price: 265000,
     status: "Còn hàng",
     description:
-      "Bộ tua vít chính xác 24 đầu cho những thao tác lắp ráp cần cảm giác tay và sự kiên nhẫn.",
+      "Bộ tua vít chính xác gồm 24 mũi cho lắp ráp và sửa chữa thiết bị điện tử.",
     art: "tools",
     accent: "#c8a96b",
-    badge: "Essential",
     specs: [
       { label: "Số đầu", value: "24 mũi" },
       { label: "Chuôi", value: "Nhôm anodized" },
@@ -173,7 +173,7 @@ export const products: Product[] = [
     price: 65000,
     status: "Còn hàng",
     description:
-      "Chuyển đổi mức logic hai chiều giữa 3.3V và 5V để các mạch khác thế hệ nói chuyện với nhau.",
+      "Chuyển đổi mức logic hai chiều giữa các mạch 3.3V và 5V.",
     art: "module",
     accent: "#c7a47e",
     specs: [

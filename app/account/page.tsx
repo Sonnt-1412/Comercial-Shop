@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ProfileForm } from "@/app/account/profile-form";
 import { requireUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminId } from "@/lib/admin";
 
 export const metadata: Metadata = { title: "Tài khoản" };
 
@@ -20,6 +22,7 @@ export default async function AccountPage() {
     ]);
   return (
     <section>
+      {isAdminId(user.id) ? <p><Link className="text-link" href="/admin">Mở trang quản trị →</Link></p> : null}
       <div className="account-section-heading">
         <div>
           <span>01 / Hồ sơ</span>

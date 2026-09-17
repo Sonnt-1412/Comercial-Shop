@@ -1,26 +1,24 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowUpRight } from "@/components/icons";
 import { formatPrice, type Product } from "@/lib/products";
 import { ProductArt } from "@/components/product-art";
 
-export function ProductCard({
-  product,
-  index = 0,
-}: {
-  product: Product;
-  index?: number;
-}) {
+export function ProductCard({ product }: { product: Product }) {
   return (
     <Link className="product-card" href={`/product/${product.slug}`}>
       <div className="product-card-art">
-        <ProductArt
-          art={product.art}
-          accent={product.accent}
-          compact
-          label={`0${index + 1} / 08`}
-        />
-        {product.badge && (
-          <span className="product-badge">{product.badge}</span>
+        {product.images?.[0] ? (
+          <Image
+            className="product-photo"
+            src={product.images[0]}
+            alt={product.name}
+            width={420}
+            height={330}
+            unoptimized
+          />
+        ) : (
+          <ProductArt art={product.art} accent={product.accent} compact />
         )}
         <span className="product-card-arrow">
           <ArrowUpRight />
@@ -33,7 +31,11 @@ export function ProductCard({
         </div>
         <div className="product-price">
           <span>{formatPrice(product.price)}</span>
-          <small>{product.status}</small>
+          <small
+            className={product.status === "Hết hàng" ? "stock-unavailable" : ""}
+          >
+            {product.status}
+          </small>
         </div>
       </div>
     </Link>

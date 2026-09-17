@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { MinusIcon, PlusIcon, TrashIcon } from "@/components/icons";
 import { ProductArt } from "@/components/product-art";
 import { useCart } from "@/components/cart-provider";
-import { cartDetails } from "@/lib/cart";
-import { formatPrice } from "@/lib/products";
+import { cartDetails, hasUnavailableItems } from "@/lib/cart";
+import { formatPrice, type Product } from "@/lib/products";
 
-export function CartView() {
+export function CartView({ products }: { products: Product[] }) {
   const { lines, hydrated, setQuantity, removeItem } = useCart();
-  const details = cartDetails(lines);
+  const details = cartDetails(lines, products);
   const total = details.reduce(
     (sum, { product, quantity }) => sum + product.price * quantity,
     0,
   );
+  const unavailable = hasUnavailableItems(details);
 
   if (!hydrated)
     return (
@@ -24,9 +26,7 @@ export function CartView() {
   if (details.length === 0)
     return (
       <div className="commerce-empty">
-        <span>00 / EMPTY</span>
         <h2>Giỏ hàng đang trống.</h2>
-        <p>Chọn một linh kiện để bắt đầu dự án tiếp theo.</p>
         <Link className="button button-primary" href="/shop">
           Xem sản phẩm
         </Link>
@@ -43,12 +43,18 @@ export function CartView() {
               href={`/product/${product.slug}`}
               aria-label={`Xem ${product.name}`}
             >
-              <ProductArt
-                art={product.art}
-                accent={product.accent}
-                compact
-                label="CART"
-              />
+              {product.images?.[0] ? (
+                <Image
+                  className="product-photo"
+                  src={product.images[0]}
+                  alt=""
+                  width={105}
+                  height={82}
+                  unoptimized
+                />
+              ) : (
+                <ProductArt art={product.art} accent={product.accent} compact />
+              )}
             </Link>
             <div className="cart-copy">
               <span className="product-category">{product.categoryLabel}</span>
@@ -74,7 +80,7 @@ export function CartView() {
               <button
                 type="button"
                 aria-label={`Tăng số lượng ${product.name}`}
-                disabled={quantity >= 99}
+                disabled={quantity >= Math.min(99, product.stock ?? 99)}
                 onClick={() => setQuantity(product.slug, quantity + 1)}
               >
                 <PlusIcon />
@@ -114,9 +120,16 @@ export function CartView() {
           Không thanh toán online. Shop sẽ liên hệ để xác nhận đơn và phí giao
           hàng.
         </p>
-        <Link className="button button-primary button-wide" href="/checkout">
-          Tiếp tục đặt hàng
-        </Link>
+        {unavailable ? (
+          <p className="form-error" role="alert">
+            Một sản phẩm đã hết hàng hoặc không đủ số lượng. Hãy giảm số lượng
+            trước khi đặt.
+          </p>
+        ) : (
+          <Link className="button button-primary button-wide" href="/checkout">
+            Tiếp tục đặt hàng
+          </Link>
+        )}
         <Link className="text-link summary-back" href="/shop">
           Tiếp tục mua sắm
         </Link>

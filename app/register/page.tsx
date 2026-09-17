@@ -14,9 +14,6 @@ export default async function RegisterPage({
   return (
     <main className="auth-page shell" id="main-content">
       <section className="auth-panel">
-        <p className="eyebrow">
-          <span className="eyebrow-line" /> Account / New builder
-        </p>
         <h1>Tạo tài khoản</h1>
         <p>Một tài khoản để lưu địa chỉ và theo dõi tất cả đơn hàng của bạn.</p>
         <AuthForm action={signUp} mode="register" next={next} />

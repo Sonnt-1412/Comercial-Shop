@@ -24,9 +24,6 @@ export default async function LoginPage({
   return (
     <main className="auth-page shell" id="main-content">
       <section className="auth-panel">
-        <p className="eyebrow">
-          <span className="eyebrow-line" /> Account / Returning builder
-        </p>
         <h1>Đăng nhập</h1>
         <p>
           Đăng nhập để lưu địa chỉ, xác nhận đơn và theo dõi quá trình giao

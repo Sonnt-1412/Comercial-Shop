@@ -6,19 +6,12 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="shell header-inner">
-        <Link className="brand" href="/" aria-label="Nør Shop trang chủ">
-          <span className="brand-mark">NØR</span>
-          <span className="brand-slash">/</span>
-          <span className="brand-sub">
-            SHOP
-            <br />
-            <i>01</i>
-          </span>
+        <Link className="brand" href="/" aria-label="Xuanquy trang chủ">
+          <span className="brand-mark">Xuanquy</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Điều hướng chính">
           <Link href="/shop">Sản phẩm</Link>
-          <Link href="/#about">Giới thiệu</Link>
         </nav>
 
         <div className="header-actions">

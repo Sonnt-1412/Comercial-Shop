@@ -5,14 +5,20 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { placeOrder } from "@/app/checkout/actions";
 import { useCart } from "@/components/cart-provider";
-import { cartDetails } from "@/lib/cart";
-import { formatPrice } from "@/lib/products";
+import { cartDetails, hasUnavailableItems } from "@/lib/cart";
+import { formatPrice, type Product } from "@/lib/products";
 import type { Address } from "@/components/address-form";
 
-export function CheckoutView({ addresses }: { addresses: Address[] }) {
+export function CheckoutView({
+  addresses,
+  products,
+}: {
+  addresses: Address[];
+  products: Product[];
+}) {
   const router = useRouter();
   const { lines, hydrated, clearCart } = useCart();
-  const details = cartDetails(lines);
+  const details = cartDetails(lines, products);
   const defaultAddress =
     addresses.find((address) => address.is_default) ?? addresses[0];
   const [addressId, setAddressId] = useState(defaultAddress?.id ?? 0);
@@ -22,6 +28,7 @@ export function CheckoutView({ addresses }: { addresses: Address[] }) {
     (sum, { product, quantity }) => sum + product.price * quantity,
     0,
   );
+  const unavailable = hasUnavailableItems(details);
 
   if (!hydrated)
     return (
@@ -148,10 +155,15 @@ export function CheckoutView({ addresses }: { addresses: Address[] }) {
             {error}
           </p>
         ) : null}
+        {unavailable ? (
+          <p className="form-error" role="alert">
+            Sản phẩm đã hết hàng hoặc không đủ số lượng. Hãy sửa giỏ hàng.
+          </p>
+        ) : null}
         <button
           className="button button-primary button-wide"
           type="button"
-          disabled={pending}
+          disabled={pending || unavailable}
           onClick={submitOrder}
         >
           {pending ? "Đang tạo đơn…" : "Xác nhận đặt hàng"}

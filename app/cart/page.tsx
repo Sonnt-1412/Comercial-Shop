@@ -1,18 +1,17 @@
 import type { Metadata } from "next";
 import { CartView } from "@/app/cart/cart-view";
+import { getCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Giỏ hàng" };
 
-export default function CartPage() {
+export default async function CartPage() {
+  const products = await getCatalogProducts();
   return (
     <main className="commerce-page shell" id="main-content">
       <div className="commerce-heading">
-        <p className="eyebrow">
-          <span className="eyebrow-line" /> Cart / Danh sách đã chọn
-        </p>
         <h1>Giỏ hàng</h1>
       </div>
-      <CartView />
+      <CartView products={products} />
     </main>
   );
 }

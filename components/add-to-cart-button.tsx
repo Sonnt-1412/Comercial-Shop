@@ -4,7 +4,7 @@ import { useState } from "react";
 import { PlusIcon } from "@/components/icons";
 import { useCart } from "@/components/cart-provider";
 
-export function AddToCartButton({ slug }: { slug: string }) {
+export function AddToCartButton({ slug, disabled = false }: { slug: string; disabled?: boolean }) {
   const { addItem } = useCart();
   const [added, setAdded] = useState(false);
 
@@ -15,8 +15,8 @@ export function AddToCartButton({ slug }: { slug: string }) {
   }
 
   return (
-    <button className="button button-primary" type="button" onClick={add}>
-      {added ? "Đã thêm vào giỏ" : "Thêm vào giỏ"}
+    <button className="button button-primary" type="button" onClick={add} disabled={disabled}>
+      {disabled ? "Hết hàng" : added ? "Đã thêm vào giỏ" : "Thêm vào giỏ"}
       <PlusIcon />
       <span className="sr-only" aria-live="polite">
         {added ? "Sản phẩm đã được thêm vào giỏ hàng" : ""}

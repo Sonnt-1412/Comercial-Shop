@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { CategoryTabs } from "@/components/category-tabs";
 import { ProductCard } from "@/components/product-card";
 import { SearchForm } from "@/components/search-form";
-import { products } from "@/lib/products";
+import { getCatalogCategories, getCatalogProducts } from "@/lib/catalog";
 
 export const metadata: Metadata = { title: "Tìm kiếm" };
 
@@ -12,6 +12,7 @@ export default async function SearchPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const params = await searchParams;
+  const [products, categories] = await Promise.all([getCatalogProducts(), getCatalogCategories()]);
   const query = params.q?.trim() ?? "";
   const normalized = query.toLowerCase();
   const results = normalized
@@ -27,19 +28,10 @@ export default async function SearchPage({
   return (
     <main className="page-shell shell search-page" id="main-content">
       <div className="page-intro">
-        <div>
-          <p className="eyebrow">
-            <span className="eyebrow-line" /> Search / Find your part
-          </p>
-          <h1>
-            Tìm một thứ
-            <br />
-            <em>để bắt đầu.</em>
-          </h1>
-        </div>
+        <h1>Tìm kiếm sản phẩm</h1>
       </div>
       <SearchForm initialValue={query} />
-      <CategoryTabs />
+      <CategoryTabs categories={categories} />
       {query ? (
         <>
           <div className="results-bar">
@@ -50,12 +42,8 @@ export default async function SearchPage({
           </div>
           {results.length > 0 ? (
             <div className="product-grid shop-grid">
-              {results.map((product, index) => (
-                <ProductCard
-                  index={index}
-                  key={product.slug}
-                  product={product}
-                />
+              {results.map((product) => (
+                <ProductCard key={product.slug} product={product} />
               ))}
             </div>
           ) : (

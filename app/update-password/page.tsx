@@ -9,9 +9,6 @@ export default function UpdatePasswordPage() {
   return (
     <main className="auth-page shell" id="main-content">
       <section className="auth-panel">
-        <p className="eyebrow">
-          <span className="eyebrow-line" /> Account / New password
-        </p>
         <h1>Mật khẩu mới</h1>
         <form className="form-stack" action={action}>
           <label>

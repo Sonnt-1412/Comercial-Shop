@@ -26,7 +26,6 @@ export default async function OrderSuccessPage({
     <main className="success-page shell" id="main-content">
       <section>
         <span className="success-mark">✓</span>
-        <p className="eyebrow">Order / Recorded</p>
         <h1>
           Đặt hàng
           <br />

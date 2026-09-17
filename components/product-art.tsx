@@ -5,14 +5,12 @@ type ProductArtProps = {
   art: ProductArt;
   accent: string;
   compact?: boolean;
-  label?: string;
 };
 
 export function ProductArt({
   art,
   accent,
   compact = false,
-  label,
 }: ProductArtProps) {
   return (
     <div
@@ -20,7 +18,6 @@ export function ProductArt({
       style={{ "--art-accent": accent } as CSSProperties}
     >
       <span className="art-grid" />
-      <span className="art-index">{label ?? "NØR / 01"}</span>
       <svg
         aria-hidden="true"
         className="art-object"
@@ -34,7 +31,6 @@ export function ProductArt({
         {art === "module" && <ModuleArt />}
         {art === "display" && <DisplayArt />}
       </svg>
-      <span className="art-mark">BUILD / 2026</span>
     </div>
   );
 }
