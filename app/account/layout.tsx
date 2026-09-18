@@ -15,7 +15,6 @@ export default function AccountLayout({
         <nav className="account-nav" aria-label="Tài khoản">
           <Link href="/account">Thông tin</Link>
           <Link href="/account/addresses">Địa chỉ</Link>
-          <Link href="/account/orders">Đơn hàng</Link>
           <form action="/auth/signout" method="post">
             <button type="submit">Đăng xuất</button>
           </form>

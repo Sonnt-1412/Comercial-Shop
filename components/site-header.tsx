@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { SearchIcon, UserIcon } from "@/components/icons";
+import { BoxIcon, SearchIcon, UserIcon } from "@/components/icons";
 import { CartLink } from "@/components/cart-link";
 
 export function SiteHeader() {
@@ -25,6 +25,14 @@ export function SiteHeader() {
           <Link className="account-link" href="/account">
             <UserIcon />
             <span>Tài khoản</span>
+          </Link>
+          <Link
+            className="orders-link"
+            href="/account/orders"
+            aria-label="Đơn hàng"
+          >
+            <BoxIcon />
+            <span>Đơn hàng</span>
           </Link>
           <CartLink />
         </div>

@@ -127,7 +127,7 @@ export function CartView({ products }: { products: Product[] }) {
           </p>
         ) : (
           <Link className="button button-primary button-wide" href="/checkout">
-            Tiếp tục đặt hàng
+            Đặt hàng
           </Link>
         )}
         <Link className="text-link summary-back" href="/shop">

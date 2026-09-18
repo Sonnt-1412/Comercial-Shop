@@ -152,14 +152,17 @@ summary:focus-visible {
 }
 .search-link,
 .account-link,
+.orders-link,
 .cart-link {
   align-items: center;
   display: inline-flex;
   gap: 8px;
+  white-space: nowrap;
   transition: color 0.2s ease;
 }
 .search-link:hover,
 .account-link:hover,
+.orders-link:hover,
 .cart-link:hover {
   color: #d8ba7b;
 }
@@ -1507,14 +1510,17 @@ h2 em {
     grid-template-columns: repeat(2, 1fr);
   }
 }
+@media (max-width: 700px) {
+  .header-actions a > span {
+    display: none;
+  }
+}
 @media (max-width: 560px) {
   .header-actions {
     gap: 15px;
   }
-  .header-actions a > span {
-    display: none;
-  }
   .account-link,
+  .orders-link,
   .cart-link,
   .search-link {
     min-height: 38px;
