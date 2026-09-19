@@ -1,29 +1,48 @@
 import Link from "next/link";
+import type { User } from "@supabase/supabase-js";
 import { adminContext } from "@/lib/admin";
+import { adminPage, searchText } from "@/lib/admin-forms";
 import { formatOrderDate } from "@/lib/orders";
+import { AdminPagination } from "@/components/admin-pagination";
 
 export default async function AdminCustomersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; q?: string }>;
 }) {
-  const page = Math.max(
-    1,
-    Math.min(1000, Math.trunc(Number((await searchParams).page) || 1)),
-  );
+  const params = await searchParams;
+  const page = adminPage(params.page);
+  const q = searchText(params.q);
   const { supabase } = await adminContext();
-  const { data, error } = await supabase.auth.admin.listUsers({
-    page,
-    perPage: 50,
+  // Auth supports server-side email filtering; the JS SDK does not expose it.
+  const url = new URL(
+    "/auth/v1/admin/users",
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+  );
+  url.search = new URLSearchParams({
+    page: String(page),
+    per_page: "50",
+    filter: q,
+  }).toString();
+  const key =
+    process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const response = await fetch(url, {
+    headers: { apikey: key, Authorization: `Bearer ${key}` },
+    cache: "no-store",
   });
-  if (error) throw new Error("Không tải được khách hàng.");
+  if (!response.ok) throw new Error("Không tải được khách hàng.");
+  const data: { users: User[] } = await response.json();
+  const total = Number(
+    response.headers.get("x-total-count") ?? data.users.length,
+  );
   const ids = data.users.map((user) => user.id);
-  const { data: profiles } = ids.length
+  const { data: profiles, error } = ids.length
     ? await supabase
         .from("profiles")
-        .select("user_id, full_name, phone")
+        .select("user_id,full_name,phone")
         .in("user_id", ids)
-    : { data: [] };
+    : { data: [], error: null };
+  if (error) throw new Error("Không tải được hồ sơ khách hàng.");
   const profileById = new Map(
     (profiles ?? []).map((profile) => [profile.user_id, profile]),
   );
@@ -31,8 +50,25 @@ export default async function AdminCustomersPage({
     <section>
       <div className="admin-section-heading">
         <h2>Khách hàng</h2>
-        <span>Trang {page}</span>
+        <span>{total} tài khoản</span>
       </div>
+      <form className="admin-filters" action="/admin/customers">
+        <label>
+          Tìm theo email
+          <input
+            name="q"
+            defaultValue={q}
+            placeholder="Email khách hàng"
+            maxLength={100}
+          />
+        </label>
+        <button className="button button-secondary" type="submit">
+          Tìm khách hàng
+        </button>
+        <Link className="text-link" href="/admin/customers">
+          Bỏ lọc
+        </Link>
+      </form>
       <div className="admin-table-wrap">
         <table className="admin-table">
           <thead>
@@ -41,7 +77,7 @@ export default async function AdminCustomersPage({
               <th>Email</th>
               <th>Điện thoại</th>
               <th>Ngày tạo</th>
-              <th></th>
+              <th>Thao tác</th>
             </tr>
           </thead>
           <tbody>
@@ -52,12 +88,19 @@ export default async function AdminCustomersPage({
                   <td>
                     <strong>{profile?.full_name || "Chưa có tên"}</strong>
                   </td>
-                  <td>{user.email}</td>
+                  <td>
+                    {user.email}
+                    <small>
+                      {user.email_confirmed_at
+                        ? "Đã xác nhận email"
+                        : "Chưa xác nhận email"}
+                    </small>
+                  </td>
                   <td>{profile?.phone ?? "—"}</td>
                   <td>{formatOrderDate(user.created_at)}</td>
                   <td>
                     <Link href={`/admin/customers/${user.id}`}>
-                      Chỉnh sửa →
+                      Xem / chỉnh sửa →
                     </Link>
                   </td>
                 </tr>
@@ -66,14 +109,15 @@ export default async function AdminCustomersPage({
           </tbody>
         </table>
       </div>
-      <div className="admin-pagination">
-        {page > 1 ? (
-          <Link href={`/admin/customers?page=${page - 1}`}>← Trước</Link>
-        ) : null}
-        {data.users.length === 50 ? (
-          <Link href={`/admin/customers?page=${page + 1}`}>Tiếp →</Link>
-        ) : null}
-      </div>
+      {!data.users.length ? (
+        <p className="admin-empty">Không có khách hàng phù hợp.</p>
+      ) : null}
+      <AdminPagination
+        path="/admin/customers"
+        page={page}
+        count={total}
+        filters={{ q }}
+      />
     </section>
   );
 }

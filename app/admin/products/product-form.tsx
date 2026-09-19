@@ -1,5 +1,6 @@
 import { saveProduct, deleteProduct } from "@/app/admin/actions";
-import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { AdminForm } from "@/components/admin-form";
+import { ProductSpecFields } from "@/components/product-spec-fields";
 import Image from "next/image";
 
 type EditableProduct = {
@@ -15,6 +16,7 @@ type EditableProduct = {
   specs: unknown;
   images: string[];
   is_active: boolean;
+  updated_at: string;
 };
 
 export function ProductForm({
@@ -26,13 +28,12 @@ export function ProductForm({
 }) {
   return (
     <div>
-      <form
-        className="admin-form form-stack"
-        action={saveProduct}
-        encType="multipart/form-data"
-      >
+      <AdminForm className="admin-form form-stack" action={saveProduct}>
         {product ? (
-          <input type="hidden" name="originalSlug" value={product.slug} />
+          <>
+            <input type="hidden" name="originalSlug" value={product.slug} />
+            <input type="hidden" name="updatedAt" value={product.updated_at} />
+          </>
         ) : null}
         <div className="form-grid">
           <label>
@@ -67,7 +68,12 @@ export function ProductForm({
           </label>
           <label>
             Danh mục
-            <select name="category" defaultValue={product?.category} required>
+            <select
+              aria-label="Danh mục"
+              name="category"
+              defaultValue={product?.category}
+              required
+            >
               {categories.map((item) => (
                 <option key={item.slug} value={item.slug}>
                   {item.name}
@@ -116,13 +122,18 @@ export function ProductForm({
           <label>
             Minh họa
             <select name="art" defaultValue={product?.art ?? "module"}>
-              {["board", "sensor", "power", "tools", "module", "display"].map(
-                (art) => (
-                  <option key={art} value={art}>
-                    {art}
-                  </option>
-                ),
-              )}
+              {Object.entries({
+                board: "Bo mạch",
+                sensor: "Cảm biến",
+                power: "Nguồn",
+                tools: "Dụng cụ",
+                module: "Module",
+                display: "Màn hình",
+              }).map(([art, label]) => (
+                <option key={art} value={art}>
+                  {label}
+                </option>
+              ))}
             </select>
           </label>
           <label>
@@ -134,14 +145,9 @@ export function ProductForm({
             />
           </label>
         </div>
-        <label>
-          Thông số kỹ thuật (JSON)
-          <textarea
-            name="specs"
-            rows={6}
-            defaultValue={JSON.stringify(product?.specs ?? [], null, 2)}
-          />
-        </label>
+        <ProductSpecFields
+          specs={Array.isArray(product?.specs) ? product.specs : []}
+        />
         {product?.images?.length ? (
           <fieldset className="admin-images">
             <legend>Ảnh hiện có</legend>
@@ -179,20 +185,30 @@ export function ProductForm({
           />{" "}
           Hiển thị ở cửa hàng
         </label>
-        <button className="button button-primary" type="submit">
+        {!categories.length ? (
+          <p className="form-error">
+            Hãy thêm danh mục trước khi tạo sản phẩm.
+          </p>
+        ) : null}
+        <button
+          className="button button-primary"
+          type="submit"
+          disabled={!categories.length}
+        >
           {product ? "Lưu thay đổi" : "Thêm sản phẩm"}
         </button>
-      </form>
+      </AdminForm>
       {product ? (
-        <form className="admin-delete" action={deleteProduct}>
+        <AdminForm
+          className="admin-delete"
+          action={deleteProduct}
+          confirm={`Xóa sản phẩm ${product.name}? Nếu sản phẩm đã có đơn hàng, hệ thống sẽ ẩn khỏi cửa hàng và giữ lịch sử đơn.`}
+        >
           <input type="hidden" name="slug" value={product.slug} />
-          <ConfirmSubmitButton
-            className="danger-link"
-            message={`Xóa sản phẩm ${product.name}? Nếu đã có đơn hàng, hãy ẩn sản phẩm thay vì xóa.`}
-          >
+          <button type="submit" className="danger-link">
             Xóa sản phẩm
-          </ConfirmSubmitButton>
-        </form>
+          </button>
+        </AdminForm>
       ) : null}
     </div>
   );

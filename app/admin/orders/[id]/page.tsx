@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AdminForm } from "@/components/admin-form";
 import { notFound } from "next/navigation";
 import { adminContext } from "@/lib/admin";
 import { updateOrder } from "@/app/admin/actions";
@@ -15,13 +16,14 @@ export default async function AdminOrderPage({
   const id = Number((await params).id);
   if (!Number.isSafeInteger(id) || id < 1) notFound();
   const { supabase } = await adminContext();
-  const { data: order } = await supabase
+  const { data: order, error } = await supabase
     .from("orders")
     .select(
       "id, order_number, user_id, recipient_name, phone, address_line, ward, district, province, note, status, total, created_at, order_items(id, product_name, quantity, unit_price, line_total)",
     )
     .eq("id", id)
     .maybeSingle();
+  if (error) throw new Error("Không tải được đơn hàng.");
   if (!order) notFound();
   const { data: buyer } = await supabase.auth.admin.getUserById(order.user_id);
   const notice = (await searchParams).notice;
@@ -73,7 +75,9 @@ export default async function AdminOrderPage({
           <p>
             {order.recipient_name}
             <br />
-            {order.phone}
+            <a className="text-link" href={`tel:${order.phone}`}>
+              {order.phone}
+            </a>
             <br />
             {order.address_line}, {order.ward}, {order.district},{" "}
             {order.province}
@@ -83,9 +87,20 @@ export default async function AdminOrderPage({
       </div>
       <div className="admin-panel">
         <h3>Trạng thái</h3>
-        <form className="admin-status-form" action={updateOrder}>
+        <p className="admin-help">
+          Hủy đơn sẽ hoàn lại tồn kho đã giữ. Mở lại đơn đã hủy cần đủ hàng.
+        </p>
+        <AdminForm
+          className="admin-status-form"
+          action={updateOrder}
+          confirm="Cập nhật trạng thái đơn hàng này?"
+        >
           <input type="hidden" name="id" value={id} />
-          <select name="status" defaultValue={order.status}>
+          <select
+            aria-label="Trạng thái đơn hàng"
+            name="status"
+            defaultValue={order.status}
+          >
             {Object.entries(orderStatuses).map(([value, label]) => (
               <option key={value} value={value}>
                 {label}
@@ -95,7 +110,7 @@ export default async function AdminOrderPage({
           <button className="button button-primary" type="submit">
             Cập nhật
           </button>
-        </form>
+        </AdminForm>
       </div>
     </section>
   );

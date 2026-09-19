@@ -6,7 +6,7 @@ import {
   saveCustomer,
   saveCustomerAddress,
 } from "@/app/admin/actions";
-import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { AdminForm } from "@/components/admin-form";
 import { formatOrderDate, orderStatuses } from "@/lib/orders";
 import { formatPrice } from "@/lib/products";
 import { isUuid } from "@/lib/admin-permissions";
@@ -22,10 +22,10 @@ export default async function AdminCustomerPage({
   if (!isUuid(id)) notFound();
   const { supabase } = await adminContext();
   const [
-    { data: auth },
-    { data: profile },
-    { data: addresses },
-    { data: orders },
+    { data: auth, error: authError },
+    { data: profile, error: profileError },
+    { data: addresses, error: addressError },
+    { data: orders, error: orderError },
   ] = await Promise.all([
     supabase.auth.admin.getUserById(id),
     supabase
@@ -45,6 +45,9 @@ export default async function AdminCustomerPage({
       .order("created_at", { ascending: false })
       .limit(50),
   ]);
+  if (authError?.status === 404) notFound();
+  if (authError || profileError || addressError || orderError)
+    throw new Error("Không tải được khách hàng.");
   if (!auth.user) notFound();
   const notice = (await searchParams).notice;
   return (
@@ -63,7 +66,7 @@ export default async function AdminCustomerPage({
       ) : null}
       <div className="admin-panel">
         <h3>Thông tin tài khoản</h3>
-        <form className="form-stack" action={saveCustomer}>
+        <AdminForm className="form-stack" action={saveCustomer}>
           <input type="hidden" name="id" value={id} />
           <div className="form-grid">
             <label>
@@ -98,25 +101,28 @@ export default async function AdminCustomerPage({
               name="password"
               type="password"
               minLength={8}
+              maxLength={128}
               autoComplete="new-password"
             />
           </label>
           <label>
-            Thuộc tính bổ sung (JSON)
+            Ghi chú khách hàng
             <textarea
-              name="attributes"
-              rows={5}
-              defaultValue={JSON.stringify(
-                profile?.customer_attributes ?? {},
-                null,
-                2,
-              )}
+              name="customerNote"
+              rows={4}
+              maxLength={2000}
+              defaultValue={
+                typeof profile?.customer_attributes?.note === "string"
+                  ? profile.customer_attributes.note
+                  : ""
+              }
+              placeholder="Nhu cầu, lưu ý khi chăm sóc khách hàng…"
             />
           </label>
           <button className="button button-primary" type="submit">
             Lưu khách hàng
           </button>
-        </form>
+        </AdminForm>
       </div>
       <div className="admin-panel">
         <h3>Địa chỉ giao hàng</h3>
@@ -128,16 +134,16 @@ export default async function AdminCustomerPage({
               {address.is_default ? " · Mặc định" : ""}
             </summary>
             <CustomerAddressForm userId={id} address={address} />
-            <form action={deleteCustomerAddress}>
+            <AdminForm
+              action={deleteCustomerAddress}
+              confirm={`Xóa địa chỉ của ${address.recipient_name}?`}
+            >
               <input type="hidden" name="userId" value={id} />
               <input type="hidden" name="id" value={address.id} />
-              <ConfirmSubmitButton
-                className="danger-link"
-                message={`Xóa địa chỉ của ${address.recipient_name}?`}
-              >
+              <button type="submit" className="danger-link">
                 Xóa địa chỉ
-              </ConfirmSubmitButton>
-            </form>
+              </button>
+            </AdminForm>
           </details>
         ))}
         <details className="admin-address">
@@ -146,7 +152,12 @@ export default async function AdminCustomerPage({
         </details>
       </div>
       <div className="admin-panel">
-        <h3>Lịch sử đơn hàng</h3>
+        <div className="admin-section-heading">
+          <h3>Lịch sử đơn hàng gần đây</h3>
+          <Link className="text-link" href={`/admin/orders?customer=${id}`}>
+            Xem tất cả →
+          </Link>
+        </div>
         <div className="admin-table-wrap">
           <table className="admin-table">
             <thead>
@@ -198,7 +209,11 @@ function CustomerAddressForm({
   address?: CustomerAddress;
 }) {
   return (
-    <form className="form-stack" action={saveCustomerAddress}>
+    <AdminForm
+      className="form-stack"
+      action={saveCustomerAddress}
+      resetOnSuccess={!address}
+    >
       <input type="hidden" name="userId" value={userId} />
       {address ? <input type="hidden" name="id" value={address.id} /> : null}
       <div className="form-grid">
@@ -278,6 +293,6 @@ function CustomerAddressForm({
       <button className="button button-primary" type="submit">
         {address ? "Lưu địa chỉ" : "Thêm địa chỉ"}
       </button>
-    </form>
+    </AdminForm>
   );
 }

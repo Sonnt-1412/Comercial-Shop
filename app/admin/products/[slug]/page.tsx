@@ -12,10 +12,13 @@ export default async function AdminProductPage({
 }) {
   const { slug } = await params;
   const { supabase } = await adminContext();
-  const [{ data: product }, { data: categories }] = await Promise.all([
-    supabase.from("products").select("*").eq("slug", slug).maybeSingle(),
-    supabase.from("categories").select("slug, name").order("sort_order"),
-  ]);
+  const [{ data: product, error }, { data: categories, error: categoryError }] =
+    await Promise.all([
+      supabase.from("products").select("*").eq("slug", slug).maybeSingle(),
+      supabase.from("categories").select("slug, name").order("sort_order"),
+    ]);
+  if (error || categoryError)
+    throw new Error("Không tải được dữ liệu sản phẩm.");
   if (!product) notFound();
   const notice = (await searchParams).notice;
   return (
@@ -32,7 +35,11 @@ export default async function AdminProductPage({
           {notice}
         </p>
       ) : null}
-      <ProductForm product={product} categories={categories ?? []} />
+      <ProductForm
+        key={product.updated_at}
+        product={product}
+        categories={categories ?? []}
+      />
     </section>
   );
 }

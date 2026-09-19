@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { BoxIcon, SearchIcon, UserIcon } from "@/components/icons";
 import { CartLink } from "@/components/cart-link";
+import { getCurrentUser } from "@/lib/auth";
+import { isAdminId } from "@/lib/admin";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const user = await getCurrentUser();
+  const admin = user ? isAdminId(user.id) : false;
   return (
     <header className="site-header">
       <div className="shell header-inner">
@@ -22,9 +26,13 @@ export function SiteHeader() {
           >
             <SearchIcon /> <span>Tìm kiếm</span>
           </Link>
-          <Link className="account-link" href="/account">
+          <Link
+            className="account-link"
+            href={admin ? "/admin" : "/account"}
+            aria-label={admin ? "Quản trị" : "Tài khoản"}
+          >
             <UserIcon />
-            <span>Tài khoản</span>
+            <span>{admin ? "Quản trị" : "Tài khoản"}</span>
           </Link>
           <Link
             className="orders-link"

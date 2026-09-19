@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { requireAdmin } from "@/lib/admin";
+import { AdminNav } from "@/components/admin-nav";
+import { AdminOrderNotifications } from "@/components/admin-order-notifications";
 
 export const metadata: Metadata = {
   title: "Quản trị",
@@ -21,18 +23,18 @@ export default async function AdminLayout({
           <p className="eyebrow">Xuanquy / Quản trị</p>
           <h1>Quản lý cửa hàng</h1>
         </div>
-        <Link className="text-link" href="/shop">
-          Xem cửa hàng ↗
-        </Link>
+        <div className="admin-heading-actions">
+          <AdminOrderNotifications />
+          <Link className="text-link" href="/account">
+            Tài khoản
+          </Link>
+          <Link className="text-link" href="/shop">
+            Xem cửa hàng ↗
+          </Link>
+        </div>
       </div>
       <div className="admin-layout">
-        <nav className="admin-nav" aria-label="Quản trị">
-          <Link href="/admin">Tổng quan</Link>
-          <Link href="/admin/products">Sản phẩm</Link>
-          <Link href="/admin/categories">Danh mục</Link>
-          <Link href="/admin/orders">Đơn hàng</Link>
-          <Link href="/admin/customers">Khách hàng</Link>
-        </nav>
+        <AdminNav />
         <div className="admin-content">{children}</div>
       </div>
     </main>

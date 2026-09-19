@@ -6,6 +6,7 @@ import { safeNext } from "@/lib/auth";
 import { noticeUrl } from "@/lib/redirects";
 import { siteUrl } from "@/lib/site-url";
 import { createClient } from "@/lib/supabase/server";
+import { isAdminId } from "@/lib/admin";
 
 export type AuthState = { error?: string; fullName?: string; email?: string };
 
@@ -17,10 +18,18 @@ export async function signIn(
   const password = String(formData.get("password") ?? "");
   if (!email || !password) return { error: "Nhập đầy đủ email và mật khẩu." };
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
   if (error)
     return { error: "Email hoặc mật khẩu chưa đúng. Vui lòng kiểm tra lại." };
-  redirect(safeNext(formData.get("next")));
+  const next = safeNext(formData.get("next"));
+  redirect(
+    next === "/account" && data.user && isAdminId(data.user.id)
+      ? "/admin"
+      : next,
+  );
 }
 
 export async function signUp(

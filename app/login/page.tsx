@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/auth-form";
 import { getCurrentUser, safeNext } from "@/lib/auth";
 import { signIn } from "@/app/login/actions";
+import { isAdminId } from "@/lib/admin";
 
 export const metadata: Metadata = { title: "Đăng nhập" };
 
@@ -20,7 +21,9 @@ export default async function LoginPage({
       "Kiểm tra email để xác nhận tài khoản trước khi đăng nhập."
       ? "Tài khoản này có thể đã được xác nhận. Hãy đăng nhập; nếu không nhớ mật khẩu, hãy dùng chức năng khôi phục mật khẩu."
       : params.notice;
-  if (await getCurrentUser()) redirect(next);
+  const user = await getCurrentUser();
+  if (user)
+    redirect(next === "/account" && isAdminId(user.id) ? "/admin" : next);
   return (
     <main className="auth-page shell" id="main-content">
       <section className="auth-panel">
