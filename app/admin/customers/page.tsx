@@ -1,9 +1,10 @@
 import Link from "next/link";
 import type { User } from "@supabase/supabase-js";
-import { adminContext } from "@/lib/admin";
+import { adminContext, adminReadError } from "@/lib/admin";
 import { adminPage, searchText } from "@/lib/admin-forms";
 import { formatOrderDate } from "@/lib/orders";
 import { AdminPagination } from "@/components/admin-pagination";
+import { adminConfiguration } from "@/lib/admin-config";
 
 export default async function AdminCustomersPage({
   searchParams,
@@ -15,22 +16,20 @@ export default async function AdminCustomersPage({
   const q = searchText(params.q);
   const { supabase } = await adminContext();
   // Auth supports server-side email filtering; the JS SDK does not expose it.
-  const url = new URL(
-    "/auth/v1/admin/users",
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-  );
+  const config = adminConfiguration(process.env);
+  const url = new URL("/auth/v1/admin/users", config.url);
   url.search = new URLSearchParams({
     page: String(page),
     per_page: "50",
     filter: q,
   }).toString();
-  const key =
-    process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const key = config.key;
   const response = await fetch(url, {
     headers: { apikey: key, Authorization: `Bearer ${key}` },
     cache: "no-store",
   });
-  if (!response.ok) throw new Error("Không tải được khách hàng.");
+  if (!response.ok)
+    adminReadError("customers.auth", { status: response.status });
   const data: { users: User[] } = await response.json();
   const total = Number(
     response.headers.get("x-total-count") ?? data.users.length,
@@ -42,7 +41,7 @@ export default async function AdminCustomersPage({
         .select("user_id,full_name,phone")
         .in("user_id", ids)
     : { data: [], error: null };
-  if (error) throw new Error("Không tải được hồ sơ khách hàng.");
+  if (error) adminReadError("customers.profiles", error);
   const profileById = new Map(
     (profiles ?? []).map((profile) => [profile.user_id, profile]),
   );

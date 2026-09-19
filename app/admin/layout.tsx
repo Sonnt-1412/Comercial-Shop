@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { requireAdmin } from "@/lib/admin";
 import { AdminNav } from "@/components/admin-nav";
 import { AdminOrderNotifications } from "@/components/admin-order-notifications";
+import { adminConfiguration } from "@/lib/admin-config";
 
 export const metadata: Metadata = {
   title: "Quản trị",
@@ -16,6 +17,23 @@ export default async function AdminLayout({
   children: ReactNode;
 }) {
   await requireAdmin();
+  const { issue } = adminConfiguration(process.env);
+  if (issue)
+    return (
+      <main className="admin-page shell" id="main-content">
+        <section className="admin-panel" role="alert">
+          <h1>Chưa cấu hình đủ quyền quản trị</h1>
+          <p>{issue}</p>
+          <p>
+            Nếu website chạy trên Vercel, vào Project → Settings → Environment
+            Variables, thêm biến cho môi trường Production rồi Redeploy.
+          </p>
+          <Link className="text-link" href="/account">
+            Về tài khoản
+          </Link>
+        </section>
+      </main>
+    );
   return (
     <main className="admin-page shell" id="main-content">
       <div className="admin-heading">

@@ -17,6 +17,7 @@ import { adminMutation } from "@/lib/admin-mutation";
 beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv("SUPABASE_SECRET_KEY", "test-secret");
+  vi.stubEnv("NEXT_PUBLIC_SUPABASE_URL", "https://test.supabase.co");
 });
 describe("admin action authorization", () => {
   it("rejects expired sessions without constructing a privileged client", async () => {

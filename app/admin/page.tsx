@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { adminContext } from "@/lib/admin";
+import { adminContext, adminReadError } from "@/lib/admin";
 import { formatOrderDate, orderStatuses } from "@/lib/orders";
 import { formatPrice } from "@/lib/products";
 
@@ -29,12 +29,20 @@ export default async function AdminPage() {
         .order("created_at", { ascending: false })
         .limit(6),
     ]);
-  if (
-    [products, orders, customers, pending, lowStock, recent].some(
-      (result) => result.error,
-    )
-  )
-    throw new Error("Không tải được tổng quan.");
+  for (const [operation, result] of Object.entries({
+    products,
+    orders,
+    customers,
+    pending,
+    lowStock,
+    recent,
+  })) {
+    if (result.error)
+      adminReadError(`overview.${operation}`, {
+        code: result.error.code,
+        status: result.status,
+      });
+  }
   return (
     <section>
       <div className="admin-section-heading">

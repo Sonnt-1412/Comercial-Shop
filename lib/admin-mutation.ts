@@ -2,6 +2,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient, isAdminId } from "@/lib/admin";
 import type { AdminResult } from "@/lib/admin-forms";
+import { adminConfiguration } from "@/lib/admin-config";
 
 export async function adminMutation(
   mutate: (
@@ -18,14 +19,8 @@ export async function adminMutation(
       };
     if (!isAdminId(data.user.id))
       return { error: "Tài khoản này không có quyền quản trị." };
-    if (
-      !process.env.SUPABASE_SECRET_KEY &&
-      !process.env.SUPABASE_SERVICE_ROLE_KEY
-    )
-      return {
-        error:
-          "Chưa cấu hình khóa quản trị trên máy chủ. Hãy kiểm tra cấu hình triển khai.",
-      };
+    const { issue } = adminConfiguration(process.env);
+    if (issue) return { error: issue };
     return await mutate(createAdminClient());
   } catch {
     return {
